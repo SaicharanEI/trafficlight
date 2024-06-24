@@ -1,0 +1,34 @@
+.detail-traffic-light {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.detail-traffic-light-colors-container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background-color: black;
+    padding: 30px;
+    border-radius: 25px;
+    width: 100px;
+}
+.detail-traffic-light-color{
+    width: 70px;
+    height: 70px;
+    border-radius: 50%; 
+}
+.detail-traffic-light-time{
+    width: 90px;
+    height: 50px;
+    color: red;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 5px;
+    margin-top: 10px;
+    border: 2px solid red;
+    font-size: 34px;
+    font-weight: bold;
+}

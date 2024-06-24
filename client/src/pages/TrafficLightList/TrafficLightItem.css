@@ -1,0 +1,22 @@
+.traffic-list-item{
+    align-self: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.traffic-list-item-time{
+    width: 40px;
+    height: 25px;
+    color: red;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 5px;
+    margin-top: 10px;
+    border: 2px solid red;
+    font-size: "20px";
+    font-weight: bold;
+}
