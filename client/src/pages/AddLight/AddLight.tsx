@@ -1,17 +1,16 @@
-import React, { useState } from "react";
-import { useAppDispatch } from "../../store/hooks";
-import {
-  addTrafficLight,
-  TrafficLightSchedule,
-} from "../../store/trafficSlice";
+import React, { useEffect, useState } from "react";
+// import { useAppDispatch } from "../../store/hooks";
+import { TrafficLightSchedule } from "../../store/trafficSlice";
 import Toast from "../../utils/Toast";
 import "../../App.css";
+
+import useFetch from "../../utils/service";
 function AddTrafficLightForm() {
-  const dispatch = useAppDispatch();
+  // const dispatch = useAppDispatch();
   const [name, setName] = useState<string>("");
   const [location, setLocation] = useState<string>("");
   const [schedules, setSchedules] = useState<TrafficLightSchedule[]>([]);
-
+  const { fetchData, state } = useFetch();
   const handleAddSchedule = () => {
     setSchedules([
       ...schedules,
@@ -32,27 +31,28 @@ function AddTrafficLightForm() {
     setSchedules(updatedSchedules);
   };
 
-  const handleSubmit = (event: React.FormEvent): void => {
+  const handleSubmit = async (event: React.FormEvent): Promise<void> => {
     event.preventDefault();
 
     const newTrafficLight = {
-      id: Math.floor(Math.random() * 1000),
       name,
       currentColor: "red",
       location,
       schedules,
     };
 
-    dispatch(addTrafficLight(newTrafficLight));
-
-    setName("");
-    setLocation("");
-    setSchedules([]);
-    Toast.fire({
-      icon: "success",
-      title: "Traffic Light Added Succesfully",
-    });
+    await fetchData("addtrafficlight", "POST", newTrafficLight);
   };
+
+  useEffect(() => {
+    if (state) {
+      if (state.error === null && state.data && !state.loading) {
+        setName("");
+        setLocation("");
+        setSchedules([]);
+      }
+    }
+  }, [state.data]);
 
   return (
     <form className="app-form" onSubmit={handleSubmit}>

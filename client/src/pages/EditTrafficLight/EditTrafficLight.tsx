@@ -1,32 +1,32 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { useAppSelector, useAppDispatch } from "../../store/hooks";
-import {
-  TrafficLight,
-  updateTrafficLight,
-  TrafficLightSchedule,
-} from "../../store/trafficSlice";
+import { useParams } from "react-router-dom";
+import { TrafficLight, TrafficLightSchedule } from "../../store/trafficSlice";
 import Toast from "../../utils/Toast";
+import useFetch from "../../utils/service";
 
 function TrafficLightEdit() {
   const { id } = useParams<{ id: string }>();
-  const dispatch = useAppDispatch();
-  const navigate = useNavigate();
-  const trafficLight = useAppSelector((state) =>
-    state.trafficLight.trafficLights.find((light) => light.id === Number(id))
-  );
+  const { fetchData, state } = useFetch();
+  const [trafficLight, setTrafficLight] = useState<TrafficLight | null>(null);
   const [name, setName] = useState<string>("");
-
   const [location, setLocation] = useState<string>("");
   const [schedules, setSchedules] = useState<TrafficLightSchedule[]>([]);
 
   useEffect(() => {
-    if (trafficLight) {
-      setName(trafficLight.name);
-      setLocation(trafficLight.location);
-      setSchedules(trafficLight.schedules);
+    if (id) {
+      fetchData(`trafficlight/${id}`, "GET");
     }
-  }, [trafficLight]);
+  }, [id]);
+
+  useEffect(() => {
+    if (state.data) {
+      const fetchedTrafficLight: TrafficLight = state.data;
+      setTrafficLight(fetchedTrafficLight);
+      setName(fetchedTrafficLight.name);
+      setLocation(fetchedTrafficLight.location);
+      setSchedules(fetchedTrafficLight.schedules);
+    }
+  }, [state.data]);
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
@@ -34,24 +34,18 @@ function TrafficLightEdit() {
     if (trafficLight) {
       const updatedTrafficLight: TrafficLight = {
         ...trafficLight,
+        name,
         location,
-        currentColor: "red",
         schedules,
       };
 
-      dispatch(updateTrafficLight(updatedTrafficLight));
-
-      Toast.fire({
-        icon: "success",
-        title: "Traffic Light Updated Succesfully",
-      });
-      navigate("/");
+      fetchData(`updatetrafficlight/${id}`, "PUT", updatedTrafficLight);
     }
   };
 
   const handleAddSchedule = () => {
-    setSchedules([
-      ...schedules,
+    setSchedules((prev) => [
+      ...prev,
       {
         timePeriod: "",
         startTime: "",
@@ -63,10 +57,9 @@ function TrafficLightEdit() {
     ]);
   };
 
-  const handleRemoveSchedule = (index: number) => {
-    const updatedSchedules = [...schedules];
-    updatedSchedules.splice(index, 1);
-    setSchedules(updatedSchedules);
+  const handleRemoveSchedule = async (index: number) => {
+    await fetchData(`deleteschedule/${schedules[index].id}`, "DELETE");
+    setSchedules((prev) => prev.filter((_, i) => i !== index));
   };
 
   if (!trafficLight) {

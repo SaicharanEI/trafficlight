@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -8,14 +9,12 @@ import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 import { MdDelete, MdEditSquare, MdVisibility } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "../../store/hooks";
-import { TrafficLight, deleteTrafficLight } from "../../store/trafficSlice";
-import { useState } from "react";
-import Toast from "../../utils/Toast";
-import TrafficLightItem from "./TrafficLightItem";
+import { TrafficLight } from "../../store/trafficSlice";
 import notfound from "../../assets/notfound.jpg";
 import "../../App.css";
 import "./TrafficLightList.css";
+import useFetch from "../../utils/service";
+import TrafficLightItem from "./TrafficLightItem";
 
 const columns = [
   { id: "id", label: "id", minWidth: 100, align: "center" },
@@ -28,8 +27,19 @@ const columns = [
 export default function TrafficList() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const dispatch = useAppDispatch();
+  const { fetchData, state } = useFetch<TrafficLight[]>();
+  const [trafficLights, setTrafficLights] = useState<TrafficLight[]>([]);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    fetchData("trafficlights", "GET");
+  }, []);
+
+  useEffect(() => {
+    if (state.data) {
+      setTrafficLights(state.data);
+    }
+  }, [state.data]);
 
   const handleChangePage = (event: any, newPage: number) => {
     setPage(newPage);
@@ -40,23 +50,15 @@ export default function TrafficList() {
     setPage(0);
   };
 
-  const trafficLights: TrafficLight[] = useAppSelector(
-    (state) => state.trafficLight.trafficLights
-  );
-
-  const onClickDeleteTrafficLight = (id: number) => {
+  const onClickDeleteTrafficLight = async (id: number) => {
     const confirmDeletion = window.confirm(
       "Are you sure you want to delete this traffic light?"
     );
-
     if (!confirmDeletion) {
       return;
     }
-    dispatch(deleteTrafficLight(id));
-    Toast.fire({
-      icon: "success",
-      title: "Traffic Light Deleted Successfully",
-    });
+    await fetchData("deletetrafficlight/" + id, "DELETE");
+    await fetchData("trafficlights", "GET");
   };
 
   return (

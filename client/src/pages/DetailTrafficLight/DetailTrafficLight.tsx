@@ -1,10 +1,12 @@
 import { useParams } from "react-router-dom";
 import useTrafficLight from "../../utils/UseTrafficLight";
 import "./DetailTrafficLight.css";
+
 function TrafficLightDetail() {
   const lightId = Number(useParams<{ id: string }>().id);
   const { remainingTime, currentColorIndex, trafficLight } =
     useTrafficLight(lightId);
+  console.log(remainingTime, currentColorIndex, trafficLight);
 
   if (!trafficLight) {
     return <div>Traffic Light not found</div>;

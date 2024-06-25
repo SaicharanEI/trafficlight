@@ -1,22 +1,40 @@
 import { useEffect, useState } from "react";
-import { useAppDispatch, useAppSelector } from "../store/hooks";
-import {
-  TrafficLightSchedule,
-  updateTrafficLightColor,
-} from "../store/trafficSlice";
-
+import { TrafficLightSchedule, TrafficLight } from "../store/trafficSlice";
 export default function useTrafficLight(lightId: number) {
-  const trafficLight = useAppSelector((state) =>
-    state.trafficLight.trafficLights.find((light) => light.id === lightId)
-  );
-  const dispatch = useAppDispatch();
+  const [trafficLight, setTrafficLight] = useState<TrafficLight>();
   const colors = ["red", "yellow", "green"];
   const [remainingTime, setRemainingTime] = useState<number>(0);
-  const [currentColorIndex, setCurrentColorIndex] = useState<number>(0); // Index of current color
+  const [currentColorIndex, setCurrentColorIndex] = useState<number>(1);
+  const [isUpdated, setIsUpdated] = useState(false);
+
+  const fetchdata = async (lightId: number) => {
+    console.log("fetchdata");
+    const response = await fetch(
+      `${import.meta.env.VITE_API_BASE_URL}trafficlight/${lightId}`
+    );
+
+    if (response.ok) {
+      const data = await response.json();
+      setTrafficLight(data.data);
+      setIsUpdated(true);
+      console.log(data.data);
+    }
+  };
+
+  useEffect(() => {
+    fetchdata(lightId);
+  }, []);
+
+  // useEffect(() => {
+  //   if (isUpdated) {
+  //     calculateRemainingTime();
+  //   }
+  // }, [isUpdated]);
 
   useEffect(() => {
     if (!trafficLight) return;
     const calculateRemainingTime = () => {
+      console.log("calculateRemainingTime");
       const now = new Date();
       const currentHour = now.getHours();
       const currentMinute = now.getMinutes();
@@ -24,7 +42,7 @@ export default function useTrafficLight(lightId: number) {
       let currentColor = "";
       let currentColorDuration = 0;
 
-      trafficLight.schedules.forEach((schedule: TrafficLightSchedule) => {
+      trafficLight.schedules?.forEach((schedule: TrafficLightSchedule) => {
         const startTimeParts = schedule.startTime.split(":");
         const endTimeParts = schedule.endTime.split(":");
         const startHour = parseInt(startTimeParts[0], 10);
@@ -39,7 +57,7 @@ export default function useTrafficLight(lightId: number) {
           currentTotalMinutes >= startTotalMinutes &&
           currentTotalMinutes < endTotalMinutes
         ) {
-          currentColor = trafficLight.currentColor;
+          currentColor = colors[currentColorIndex];
           currentColorDuration =
             schedule[`${currentColor.toLowerCase()}Duration`] || 0;
         } else {
@@ -61,10 +79,10 @@ export default function useTrafficLight(lightId: number) {
         if (prevTime <= 1) {
           const nextColorIndex = (currentColorIndex + 1) % colors.length;
           const nextColor = colors[nextColorIndex];
-
+          // console.log(nextColor, "nextColor");
           setCurrentColorIndex(nextColorIndex);
-          dispatch(updateTrafficLightColor({ id: lightId, color: nextColor }));
-
+          // dispatch(updateTrafficLightColor({ id: lightId, color: nextColor }));
+          // updateColorApi(lightId, nextColor);
           let nextColorDuration = 0;
           trafficLight.schedules.forEach((schedule: TrafficLightSchedule) => {
             nextColorDuration =
@@ -79,7 +97,6 @@ export default function useTrafficLight(lightId: number) {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [currentColorIndex]);
-
+  }, [currentColorIndex, isUpdated]);
   return { currentColorIndex, remainingTime, trafficLight };
 }
