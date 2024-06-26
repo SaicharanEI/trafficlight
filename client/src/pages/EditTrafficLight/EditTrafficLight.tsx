@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { TrafficLight, TrafficLightSchedule } from "../../store/trafficSlice";
-import Toast from "../../utils/Toast";
 import useFetch from "../../utils/service";
+import Toast from "../../utils/Toast"; // Assuming Toast is your notification component
 
 function TrafficLightEdit() {
   const { id } = useParams<{ id: string }>();
@@ -39,7 +39,8 @@ function TrafficLightEdit() {
         schedules,
       };
 
-      fetchData(`updatetrafficlight/${id}`, "PUT", updatedTrafficLight);
+      fetchData(`updatetrafficlight/${id}`, "PUT", updatedTrafficLight)
+       
     }
   };
 
@@ -47,19 +48,34 @@ function TrafficLightEdit() {
     setSchedules((prev) => [
       ...prev,
       {
+        id: undefined,
         timePeriod: "",
         startTime: "",
         endTime: "",
         redDuration: 0,
         yellowDuration: 0,
         greenDuration: 0,
+        trafficLightId: Number(id),
       },
     ]);
   };
 
   const handleRemoveSchedule = async (index: number) => {
-    await fetchData(`deleteschedule/${schedules[index].id}`, "DELETE");
+    const scheduleToRemove = schedules[index];
+    if (scheduleToRemove.id) {
+      await fetchData(`deleteschedule/${scheduleToRemove.id}`, "DELETE");
+    }
     setSchedules((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleScheduleChange = (
+    index: number,
+    field: keyof TrafficLightSchedule,
+    value: string | number
+  ) => {
+    setSchedules((prev) =>
+      prev.map((item, i) => (i === index ? { ...item, [field]: value } : item))
+    );
   };
 
   if (!trafficLight) {
@@ -69,13 +85,7 @@ function TrafficLightEdit() {
   return (
     <form className="app-form" onSubmit={handleSubmit}>
       <h1 className="app-main-heading">Edit Traffic Light</h1>
-      <div
-        style={{
-          display: "flex",
-          flexWrap: "wrap",
-          gap: "20px",
-        }}
-      >
+      <div style={{ display: "flex", flexWrap: "wrap", gap: "20px" }}>
         <div className="app-input-container">
           <label className="app-input-label" htmlFor="name">
             Name:
@@ -115,10 +125,7 @@ function TrafficLightEdit() {
             }}
           >
             <div className="app-input-container">
-              <label
-                className="app-input-label"
-                htmlFor={`timePeriod-${index}`}
-              >
+              <label className="app-input-label" htmlFor={`timePeriod-${index}`}>
                 Time Period:
               </label>
               <input
@@ -127,13 +134,7 @@ function TrafficLightEdit() {
                 id={`timePeriod-${index}`}
                 value={schedule.timePeriod}
                 onChange={(e) =>
-                  setSchedules((prev) =>
-                    prev.map((item, i) =>
-                      i === index
-                        ? { ...item, timePeriod: e.target.value }
-                        : item
-                    )
-                  )
+                  handleScheduleChange(index, "timePeriod", e.target.value)
                 }
                 required
               />
@@ -148,31 +149,22 @@ function TrafficLightEdit() {
                 id={`startTime-${index}`}
                 value={schedule.startTime}
                 onChange={(e) =>
-                  setSchedules((prev) =>
-                    prev.map((item, i) =>
-                      i === index
-                        ? { ...item, startTime: e.target.value }
-                        : item
-                    )
-                  )
+                  handleScheduleChange(index, "startTime", e.target.value)
                 }
                 required
               />
             </div>
             <div className="app-input-container">
-              <label htmlFor={`endTime-${index}`}>End Time:</label>
-
+              <label className="app-input-label" htmlFor={`endTime-${index}`}>
+                End Time:
+              </label>
               <input
                 className="app-select-field"
                 type="time"
                 id={`endTime-${index}`}
                 value={schedule.endTime}
                 onChange={(e) =>
-                  setSchedules((prev) =>
-                    prev.map((item, i) =>
-                      i === index ? { ...item, endTime: e.target.value } : item
-                    )
-                  )
+                  handleScheduleChange(index, "endTime", e.target.value)
                 }
                 required
               />
@@ -190,13 +182,7 @@ function TrafficLightEdit() {
                 id={`redDuration-${index}`}
                 value={schedule.redDuration}
                 onChange={(e) =>
-                  setSchedules((prev) =>
-                    prev.map((item, i) =>
-                      i === index
-                        ? { ...item, redDuration: parseInt(e.target.value) }
-                        : item
-                    )
-                  )
+                  handleScheduleChange(index, "redDuration", parseInt(e.target.value))
                 }
                 required
               />
@@ -214,13 +200,7 @@ function TrafficLightEdit() {
                 id={`yellowDuration-${index}`}
                 value={schedule.yellowDuration}
                 onChange={(e) =>
-                  setSchedules((prev) =>
-                    prev.map((item, i) =>
-                      i === index
-                        ? { ...item, yellowDuration: parseInt(e.target.value) }
-                        : item
-                    )
-                  )
+                  handleScheduleChange(index, "yellowDuration", parseInt(e.target.value))
                 }
                 required
               />
@@ -238,13 +218,7 @@ function TrafficLightEdit() {
                 id={`greenDuration-${index}`}
                 value={schedule.greenDuration}
                 onChange={(e) =>
-                  setSchedules((prev) =>
-                    prev.map((item, i) =>
-                      i === index
-                        ? { ...item, greenDuration: parseInt(e.target.value) }
-                        : item
-                    )
-                  )
+                  handleScheduleChange(index, "greenDuration", parseInt(e.target.value))
                 }
                 required
               />
@@ -261,16 +235,11 @@ function TrafficLightEdit() {
         </div>
       ))}
       <div style={{ display: "flex", flexWrap: "wrap", gap: "20px" }}>
-        <button
-          className="app-main-button"
-          type="button"
-          onClick={handleAddSchedule}
-        >
+        <button className="app-main-button" type="button" onClick={handleAddSchedule}>
           Add Schedule
         </button>
-
         <button className="app-main-button" type="submit">
-          Add Traffic Light
+          Save Traffic Light
         </button>
       </div>
     </form>

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 // import { useAppDispatch } from "../../store/hooks";
 import { TrafficLightSchedule } from "../../store/trafficSlice";
-import Toast from "../../utils/Toast";
+// import Toast from "../../utils/Toast";
 import "../../App.css";
 
 import useFetch from "../../utils/service";
