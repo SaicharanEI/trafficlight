@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { TrafficLight, TrafficLightSchedule } from "../../store/trafficSlice";
 import useFetch from "../../utils/service";
-import Toast from "../../utils/Toast"; // Assuming Toast is your notification component
+import ScheduleComponent from "../../components/Schedules/Schedule";
 
 function TrafficLightEdit() {
   const { id } = useParams<{ id: string }>();
@@ -28,7 +28,7 @@ function TrafficLightEdit() {
     }
   }, [state.data]);
 
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
     if (trafficLight) {
@@ -39,8 +39,7 @@ function TrafficLightEdit() {
         schedules,
       };
 
-      fetchData(`updatetrafficlight/${id}`, "PUT", updatedTrafficLight)
-       
+      await fetchData(`updatetrafficlight/${id}`, "PUT", updatedTrafficLight);
     }
   };
 
@@ -114,134 +113,28 @@ function TrafficLightEdit() {
         </div>
       </div>
       {schedules.map((schedule, index) => (
-        <div key={index}>
-          <h3>Schedule {index + 1}</h3>
-          <div
-            style={{
-              display: "flex",
-              gap: "20px",
-              flexWrap: "wrap",
-              justifyContent: "center",
-            }}
-          >
-            <div className="app-input-container">
-              <label className="app-input-label" htmlFor={`timePeriod-${index}`}>
-                Time Period:
-              </label>
-              <input
-                className="app-input-field"
-                type="text"
-                id={`timePeriod-${index}`}
-                value={schedule.timePeriod}
-                onChange={(e) =>
-                  handleScheduleChange(index, "timePeriod", e.target.value)
-                }
-                required
-              />
-            </div>
-            <div className="app-input-container">
-              <label className="app-input-label" htmlFor={`startTime-${index}`}>
-                Start Time:
-              </label>
-              <input
-                className="app-select-field"
-                type="time"
-                id={`startTime-${index}`}
-                value={schedule.startTime}
-                onChange={(e) =>
-                  handleScheduleChange(index, "startTime", e.target.value)
-                }
-                required
-              />
-            </div>
-            <div className="app-input-container">
-              <label className="app-input-label" htmlFor={`endTime-${index}`}>
-                End Time:
-              </label>
-              <input
-                className="app-select-field"
-                type="time"
-                id={`endTime-${index}`}
-                value={schedule.endTime}
-                onChange={(e) =>
-                  handleScheduleChange(index, "endTime", e.target.value)
-                }
-                required
-              />
-            </div>
-            <div className="app-input-container">
-              <label
-                className="app-input-label"
-                htmlFor={`redDuration-${index}`}
-              >
-                Red Duration (seconds):
-              </label>
-              <input
-                className="app-input-field"
-                type="number"
-                id={`redDuration-${index}`}
-                value={schedule.redDuration}
-                onChange={(e) =>
-                  handleScheduleChange(index, "redDuration", parseInt(e.target.value))
-                }
-                required
-              />
-            </div>
-            <div className="app-input-container">
-              <label
-                className="app-input-label"
-                htmlFor={`yellowDuration-${index}`}
-              >
-                Yellow Duration (seconds):
-              </label>
-              <input
-                className="app-input-field"
-                type="number"
-                id={`yellowDuration-${index}`}
-                value={schedule.yellowDuration}
-                onChange={(e) =>
-                  handleScheduleChange(index, "yellowDuration", parseInt(e.target.value))
-                }
-                required
-              />
-            </div>
-            <div className="app-input-container">
-              <label
-                className="app-input-label"
-                htmlFor={`greenDuration-${index}`}
-              >
-                Green Duration (seconds):
-              </label>
-              <input
-                className="app-input-field"
-                type="number"
-                id={`greenDuration-${index}`}
-                value={schedule.greenDuration}
-                onChange={(e) =>
-                  handleScheduleChange(index, "greenDuration", parseInt(e.target.value))
-                }
-                required
-              />
-            </div>
-          </div>
-          <button
-            style={{ marginTop: "20px", alignSelf: "center" }}
-            type="button"
-            className="app-main-button"
-            onClick={() => handleRemoveSchedule(index)}
-          >
-            Remove Schedule
-          </button>
-        </div>
+        <ScheduleComponent
+          schedule={schedule}
+          index={index}
+          handleScheduleChange={handleScheduleChange}
+          handleRemoveSchedule={handleRemoveSchedule}
+        />
       ))}
-      <div style={{ display: "flex", flexWrap: "wrap", gap: "20px" }}>
-        <button className="app-main-button" type="button" onClick={handleAddSchedule}>
-          Add Schedule
-        </button>
-        <button className="app-main-button" type="submit">
-          Save Traffic Light
-        </button>
-      </div>
+      <button
+        style={{ marginTop: "20px", alignSelf: "center" }}
+        type="button"
+        className="app-main-button"
+        onClick={handleAddSchedule}
+      >
+        Add Schedule
+      </button>
+      <button
+        style={{ marginTop: "20px", alignSelf: "center" }}
+        type="submit"
+        className="app-main-button"
+      >
+        Save Changes
+      </button>
     </form>
   );
 }

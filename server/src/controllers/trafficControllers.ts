@@ -123,29 +123,45 @@ export const AddTrafficLight = async (req: Request, res: Response) => {
 
 export const updateTrafficLight = async (req: Request, res: Response) => {
   const { id } = req.params;
-
   const trafficLightId = Number(id);
-  const parsedBody = TrafficLightSchema.parse(req.body);
-  const { name, location, currentColor, schedules } = parsedBody;
-console.log(schedules)
+  // const parsedBody = TrafficLightSchema.parse(req.body);
+  const { name, location, currentColor, schedules } = req.body;
+  console.log(schedules, "schedules", schedules.length, "length", schedules[0].id);
   const updatedTrafficLight = await prismaCilent.trafficLight.update({
     where: { id: trafficLightId },
     data: { name, location, currentColor },
-    include: { schedules: true },
   });
 
   // Update schedules
   for (const schedule of schedules) {
-    if (schedule.id) {
+    if (schedule.id !== undefined) {
       // Update existing schedule
+      console.log( "schedule.update called");
+
       await prismaCilent.trafficLightSchedule.update({
         where: { id: schedule.id },
-        data: { ...schedule },
+        data: {
+          timePeriod: schedule.timePeriod,
+          startTime: schedule.startTime,
+          endTime: schedule.endTime,
+          redDuration: schedule.redDuration,
+          yellowDuration: schedule.yellowDuration,
+          greenDuration: schedule.greenDuration,
+        },
       });
     } else {
+      console.log( "schedule.create called");
       // Create new schedule
       await prismaCilent.trafficLightSchedule.create({
-        data: { ...schedule, trafficLightId },
+        data: {
+          timePeriod: schedule.timePeriod,
+          startTime: schedule.startTime,
+          endTime: schedule.endTime,
+          redDuration: schedule.redDuration,
+          yellowDuration: schedule.yellowDuration,
+          greenDuration: schedule.greenDuration,
+          trafficLightId: trafficLightId,
+        },
       });
     }
   }
@@ -153,7 +169,13 @@ console.log(schedules)
   // Fetch the updated traffic light with the latest schedules
   const trafficLightWithSchedules = await prismaCilent.trafficLight.findUnique({
     where: { id: trafficLightId },
-    include: { schedules: true },
+    include: { schedules:  {
+      where: {
+        status: false,
+      }, 
+
+    },
+  }
   });
 
   res.status(200).json({
@@ -161,6 +183,7 @@ console.log(schedules)
     data: trafficLightWithSchedules,
   });
 };
+
 
 export const DeleteTrafficLight = async (req: Request, res: Response) => {
   const { id } = req.params;
@@ -194,6 +217,7 @@ export const getTrafficLight = async (req: Request, res: Response) => {
       },
     },
   });
+  console.log(trafficlight, "trafficlight");
   res.status(200).json({ data: trafficlight });
 };
 

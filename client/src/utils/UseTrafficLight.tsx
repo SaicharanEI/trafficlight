@@ -1,11 +1,16 @@
 import { useEffect, useState } from "react";
 import { TrafficLightSchedule, TrafficLight } from "../store/trafficSlice";
+
 export default function useTrafficLight(lightId: number) {
   const [trafficLight, setTrafficLight] = useState<TrafficLight>();
   const colors = ["red", "yellow", "green"];
   const [remainingTime, setRemainingTime] = useState<number>(0);
   const [currentColorIndex, setCurrentColorIndex] = useState<number>(1);
   const [isUpdated, setIsUpdated] = useState(false);
+
+  const onClickUpdateColor = (index: number) => {
+    setCurrentColorIndex(index);
+  };
 
   const fetchdata = async (lightId: number) => {
     console.log("fetchdata");
@@ -24,12 +29,6 @@ export default function useTrafficLight(lightId: number) {
   useEffect(() => {
     fetchdata(lightId);
   }, []);
-
-  // useEffect(() => {
-  //   if (isUpdated) {
-  //     calculateRemainingTime();
-  //   }
-  // }, [isUpdated]);
 
   useEffect(() => {
     if (!trafficLight) return;
@@ -79,16 +78,13 @@ export default function useTrafficLight(lightId: number) {
         if (prevTime <= 1) {
           const nextColorIndex = (currentColorIndex + 1) % colors.length;
           const nextColor = colors[nextColorIndex];
-          // console.log(nextColor, "nextColor");
-          setCurrentColorIndex(nextColorIndex);
-          // dispatch(updateTrafficLightColor({ id: lightId, color: nextColor }));
-          // updateColorApi(lightId, nextColor);
           let nextColorDuration = 0;
           trafficLight.schedules.forEach((schedule: TrafficLightSchedule) => {
             nextColorDuration =
               schedule[`${nextColor.toLowerCase()}Duration`] || 0;
           });
 
+          setCurrentColorIndex(nextColorIndex);
           return nextColorDuration;
         } else {
           return prevTime - 1;
@@ -98,5 +94,6 @@ export default function useTrafficLight(lightId: number) {
 
     return () => clearInterval(interval);
   }, [currentColorIndex, isUpdated]);
-  return { currentColorIndex, remainingTime, trafficLight };
+
+  return { currentColorIndex, remainingTime, trafficLight, onClickUpdateColor };
 }

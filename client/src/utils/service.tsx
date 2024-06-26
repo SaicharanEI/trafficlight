@@ -39,12 +39,15 @@ const useFetch = <T,>() => {
         });
         throw new Error(responseData.message || "Network response was not ok");
       } else {
-        Toast.fire({
-          icon: "success",
-          title: responseData.message,
-        });
-        setState({ data: responseData.data, loading: false, error: null });
-      }
+        if (method !== "GET") {
+          Toast.fire({
+            icon: "success",
+            title: responseData.message,
+          });
+        }
+          setState({ data: responseData.data, loading: false, error: null });
+        }
+      
     } catch (error: any) {
       console.log(error);
       setState({ data: null, loading: false, error: error.message });

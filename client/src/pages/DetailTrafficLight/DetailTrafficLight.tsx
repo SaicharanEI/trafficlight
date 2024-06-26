@@ -4,7 +4,7 @@ import "./DetailTrafficLight.css";
 
 function TrafficLightDetail() {
   const lightId = Number(useParams<{ id: string }>().id);
-  const { remainingTime, currentColorIndex, trafficLight } =
+  const { remainingTime, currentColorIndex, trafficLight, onClickUpdateColor } =
     useTrafficLight(lightId);
   console.log(remainingTime, currentColorIndex, trafficLight);
 
@@ -21,6 +21,7 @@ function TrafficLightDetail() {
       <div className="detail-traffic-light-colors-container">
         {colors.map((color, index) => (
           <div
+            onClick={() => onClickUpdateColor(index)}
             className="detail-traffic-light-color"
             key={color}
             style={{

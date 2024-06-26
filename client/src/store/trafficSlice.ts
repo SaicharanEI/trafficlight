@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export interface TrafficLightSchedule {
-  
+  id: number | undefined;
   timePeriod: string;
   startTime: string;
   endTime: string;

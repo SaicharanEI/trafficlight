@@ -3,8 +3,9 @@ import React, { useEffect, useState } from "react";
 import { TrafficLightSchedule } from "../../store/trafficSlice";
 // import Toast from "../../utils/Toast";
 import "../../App.css";
-
 import useFetch from "../../utils/service";
+import ScheduleComponent from "../../components/Schedules/Schedule";
+
 function AddTrafficLightForm() {
   // const dispatch = useAppDispatch();
   const [name, setName] = useState<string>("");
@@ -15,6 +16,7 @@ function AddTrafficLightForm() {
     setSchedules([
       ...schedules,
       {
+        id: undefined,
         timePeriod: "",
         startTime: "",
         endTime: "",
@@ -29,6 +31,16 @@ function AddTrafficLightForm() {
     const updatedSchedules = [...schedules];
     updatedSchedules.splice(index, 1);
     setSchedules(updatedSchedules);
+  };
+
+  const handleScheduleChange = (
+    index: number,
+    field: keyof TrafficLightSchedule,
+    value: string | number
+  ) => {
+    setSchedules((prev) =>
+      prev.map((item, i) => (i === index ? { ...item, [field]: value } : item))
+    );
   };
 
   const handleSubmit = async (event: React.FormEvent): Promise<void> => {
@@ -92,161 +104,7 @@ function AddTrafficLightForm() {
         </div>
       </div>
       {schedules.map((schedule, index) => (
-        <div key={index}>
-          <h3>Schedule {index + 1}</h3>
-          <div
-            style={{
-              display: "flex",
-              gap: "20px",
-              flexWrap: "wrap",
-              justifyContent: "center",
-            }}
-          >
-            <div className="app-input-container">
-              <label
-                className="app-input-label"
-                htmlFor={`timePeriod-${index}`}
-              >
-                Time Period:
-              </label>
-              <input
-                className="app-input-field"
-                type="text"
-                id={`timePeriod-${index}`}
-                value={schedule.timePeriod}
-                onChange={(e) =>
-                  setSchedules((prev) =>
-                    prev.map((item, i) =>
-                      i === index
-                        ? { ...item, timePeriod: e.target.value }
-                        : item
-                    )
-                  )
-                }
-                required
-              />
-            </div>
-            <div className="app-input-container">
-              <label className="app-input-label" htmlFor={`startTime-${index}`}>
-                Start Time:
-              </label>
-              <input
-                className="app-select-field"
-                type="time"
-                id={`startTime-${index}`}
-                value={schedule.startTime}
-                onChange={(e) =>
-                  setSchedules((prev) =>
-                    prev.map((item, i) =>
-                      i === index
-                        ? { ...item, startTime: e.target.value }
-                        : item
-                    )
-                  )
-                }
-                required
-              />
-            </div>
-            <div className="app-input-container">
-              <label htmlFor={`endTime-${index}`}>End Time:</label>
-
-              <input
-                className="app-select-field"
-                type="time"
-                id={`endTime-${index}`}
-                value={schedule.endTime}
-                onChange={(e) =>
-                  setSchedules((prev) =>
-                    prev.map((item, i) =>
-                      i === index ? { ...item, endTime: e.target.value } : item
-                    )
-                  )
-                }
-                required
-              />
-            </div>
-            <div className="app-input-container">
-              <label
-                className="app-input-label"
-                htmlFor={`redDuration-${index}`}
-              >
-                Red Duration (seconds):
-              </label>
-              <input
-                className="app-input-field"
-                type="number"
-                id={`redDuration-${index}`}
-                value={schedule.redDuration}
-                onChange={(e) =>
-                  setSchedules((prev) =>
-                    prev.map((item, i) =>
-                      i === index
-                        ? { ...item, redDuration: parseInt(e.target.value) }
-                        : item
-                    )
-                  )
-                }
-                required
-              />
-            </div>
-            <div className="app-input-container">
-              <label
-                className="app-input-label"
-                htmlFor={`yellowDuration-${index}`}
-              >
-                Yellow Duration (seconds):
-              </label>
-              <input
-                className="app-input-field"
-                type="number"
-                id={`yellowDuration-${index}`}
-                value={schedule.yellowDuration}
-                onChange={(e) =>
-                  setSchedules((prev) =>
-                    prev.map((item, i) =>
-                      i === index
-                        ? { ...item, yellowDuration: parseInt(e.target.value) }
-                        : item
-                    )
-                  )
-                }
-                required
-              />
-            </div>
-            <div className="app-input-container">
-              <label
-                className="app-input-label"
-                htmlFor={`greenDuration-${index}`}
-              >
-                Green Duration (seconds):
-              </label>
-              <input
-                className="app-input-field"
-                type="number"
-                id={`greenDuration-${index}`}
-                value={schedule.greenDuration}
-                onChange={(e) =>
-                  setSchedules((prev) =>
-                    prev.map((item, i) =>
-                      i === index
-                        ? { ...item, greenDuration: parseInt(e.target.value) }
-                        : item
-                    )
-                  )
-                }
-                required
-              />
-            </div>
-          </div>
-          <button
-            style={{ marginTop: "20px", alignSelf: "center" }}
-            type="button"
-            className="app-main-button"
-            onClick={() => handleRemoveSchedule(index)}
-          >
-            Remove Schedule
-          </button>
-        </div>
+        <ScheduleComponent schedule={schedule} index={index} handleScheduleChange={handleScheduleChange} handleRemoveSchedule={handleRemoveSchedule} />
       ))}
       <div style={{ display: "flex", flexWrap: "wrap", gap: "20px" }}>
         <button
