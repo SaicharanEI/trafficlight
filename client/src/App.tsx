@@ -11,7 +11,13 @@ function App() {
       <Route path="*" element={<NotFound />} />
       <Route path="/add-traffic-light" element={<AddTrafficLightForm />} />
       <Route path="/" element={<TrafficLightList />} />
-      <Route path="/traffic-light/:id" element={<TrafficLightDetail />} />
+      {/* <Route path="/traffic-light/:id" element={<TrafficLightDetail />} /> */}
+      <Route path="/traffic-light">
+        <Route index element={<TrafficLightList />} />
+        <Route path=":id" element={<TrafficLightDetail />} />
+        <Route path="edit/:id" element={<TrafficLightEdit />} />
+      </Route>
+      {/* <Route path="/traffic-light/:id" element={<TrafficLightDetail />} /> */}
       <Route path="/traffic-light-edit/:id/" element={<TrafficLightEdit />} />
     </Routes>
   );

@@ -1,4 +1,5 @@
-import ScheduleComponent from "../Schedules/Schedule";
+import ScheduleComponent from "../Schedules";
+import "./index.css";
 
 export default function TrafficLightComponent({
   handleSubmit,
@@ -14,8 +15,18 @@ export default function TrafficLightComponent({
 }: any) {
   return (
     <form className="app-form" onSubmit={handleSubmit}>
-      <h1 className="app-main-heading">{heading}</h1>
-      <div style={{ display: "flex", flexWrap: "wrap", gap: "20px" }}>
+      <h1 style={{ margin: "0px" }} className="app-main-heading">
+        {heading}
+      </h1>
+      <button
+        style={{ alignSelf: "flex-end", margin: "0px" }}
+        type="button"
+        className="app-main-button"
+        onClick={handleAddSchedule}
+      >
+        Add Schedule
+      </button>
+      <div className="app-form-container1">
         <div className="app-input-container">
           <label className="app-input-label" htmlFor="name">
             Name:
@@ -52,14 +63,6 @@ export default function TrafficLightComponent({
           handleRemoveSchedule={handleRemoveSchedule}
         />
       ))}
-      <button
-        style={{ marginTop: "20px", alignSelf: "center" }}
-        type="button"
-        className="app-main-button"
-        onClick={handleAddSchedule}
-      >
-        Add Schedule
-      </button>
       <button
         style={{ marginTop: "20px", alignSelf: "center" }}
         type="submit"

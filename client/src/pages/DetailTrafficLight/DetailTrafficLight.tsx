@@ -50,10 +50,10 @@ function TrafficLightDetail() {
             key={color}
             className={color}
             style={{
-              backgroundColor: index === currentColorIndex ? color : "grey",
+              backgroundColor: index === currentColorIndex ? color : "",
               boxShadow:
                 index === currentColorIndex
-                  ? `0 3px 25px #111 inset, 0 1px 10px ${color}`
+                  ? `2px 1px 25px #111 inset, 0 1px 10px ${color}`
                   : "none",
               // animation:
               //   index === currentColorIndex ? `${color} 1s infinite` : "none",

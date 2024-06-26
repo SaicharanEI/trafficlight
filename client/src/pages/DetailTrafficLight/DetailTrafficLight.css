@@ -192,11 +192,11 @@
     border: 2px dotted red;
     font-size: 40px ;
     font-weight: bold;
-    position: absolute;
+    /* position: absolute;
     content: '';  
     background: radial-gradient(circle, transparent 50%, transparent 50%),
     radial-gradient(circle, red 20%, black 50%) 30px 30px;
-    background-size:4px 4px;
+    background-size:4px 4px; */
    
   }
   

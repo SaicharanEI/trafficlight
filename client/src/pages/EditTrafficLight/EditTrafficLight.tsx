@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { TrafficLight, TrafficLightSchedule } from "../../store/trafficSlice";
 import useFetch from "../../utils/service";
-import TrafficLightComponent from "../../components/TrafficLigt/TrafficLight";
+import TrafficLightComponent from "../../components/TrafficLight";
 
 function TrafficLightEdit() {
   const { id } = useParams<{ id: string }>();
@@ -18,7 +18,7 @@ function TrafficLightEdit() {
 
   useEffect(() => {
     if (state.data) {
-      const fetchedTrafficLight: TrafficLight = state.data;
+      const fetchedTrafficLight: any = state.data;
       setTrafficLight(fetchedTrafficLight);
       setName(fetchedTrafficLight.name);
       setLocation(fetchedTrafficLight.location);

@@ -24,10 +24,27 @@
   gap: 10px;
   align-items: center;
   margin: 5px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-width: 350px;
+  max-width: 100%;
+}
+
+@media (min-width: 552px) {
+  .app-input-container{
+    min-width: 50%;
+  }
+}
+
+@media (min-width: 992px) {
+  .app-input-container{
+    min-width: 30%;
+  }
 }
 
 .app-input-label{
-  font-weight: 500;
+  font-weight: 600;
   font-size: 14px;
 }
 
@@ -58,14 +75,20 @@
   align-items:center;
   justify-content: center;
   min-height: 100%;
+  max-width: 100%;
   overflow-y: auto;
 }
 .not-found-image{
   width: 400px;
   height: 400px;
 }
+
 .app-main-heading{
   font-size: 28px;
   font-weight: 700;
   color: #293b51;
+}
+.app-main-heading2{
+  font-size: 22px;
+  font-weight: 700;
 }

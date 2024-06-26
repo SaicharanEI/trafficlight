@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { TrafficLightSchedule } from "../../store/trafficSlice";
 import "../../App.css";
 import useFetch from "../../utils/service";
-import TrafficLightComponent from "../../components/TrafficLigt/TrafficLight";
+import TrafficLightComponent from "../../components/TrafficLight";
 
 function AddTrafficLightForm() {
   // const dispatch = useAppDispatch();

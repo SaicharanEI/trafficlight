@@ -12,13 +12,7 @@ const TrafficLightItem = ({ lightId }: { lightId: number }) => {
 
   return (
     <div className="traffic-list-item">
-      <div
-        style={{
-          display: "flex",
-          alignSelf: "center",
-          gap: "10px",
-        }}
-      >
+      <div className="traffic-list-item-colors">
         {colors.map((color, index) => (
           <div
             key={color}

@@ -10,7 +10,6 @@ import TableRow from "@mui/material/TableRow";
 import { MdDelete, MdEditSquare, MdVisibility } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import { TrafficLight } from "../../store/trafficSlice";
-import notfound from "../../assets/notfound.jpg";
 import "../../App.css";
 import "./TrafficLightList.css";
 import useFetch from "../../utils/service";
@@ -71,7 +70,7 @@ export default function TrafficList() {
       <div className="not-found-container">
         <h1 className="app-main-heading">No Traffic Lights Found</h1>
         <img
-          src={notfound}
+          src={import.meta.env.PUBLIC_URL + "notfound.jpg"}
           alt="No Traffic Lights Found"
           className="not-found-image"
         />
@@ -137,6 +136,7 @@ export default function TrafficList() {
                         {column.id === "actions" && (
                           <div>
                             <MdEditSquare
+                              style={{ cursor: "pointer" }}
                               color="green"
                               size={25}
                               onClick={() =>
@@ -144,6 +144,7 @@ export default function TrafficList() {
                               }
                             />
                             <MdDelete
+                              style={{ cursor: "pointer" }}
                               color="red"
                               size={25}
                               onClick={() =>
@@ -151,6 +152,7 @@ export default function TrafficList() {
                               }
                             />
                             <MdVisibility
+                              style={{ cursor: "pointer" }}
                               color="blue"
                               size={25}
                               onClick={() =>

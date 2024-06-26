@@ -6,7 +6,7 @@ export default function ScheduleComponent({
 }: any) {
   return (
     <div key={index}>
-      <h3>Schedule {index + 1}</h3>
+      <h3 className="app-main-heading2">Schedule {index + 1}</h3>
       <div
         style={{
           display: "flex",
@@ -46,7 +46,9 @@ export default function ScheduleComponent({
           />
         </div>
         <div className="app-input-container">
-          <label htmlFor={`endTime-${index}`}>End Time:</label>
+          <label className="app-input-label" htmlFor={`endTime-${index}`}>
+            End Time:
+          </label>
           <input
             className="app-select-field"
             type="time"
@@ -120,7 +122,7 @@ export default function ScheduleComponent({
         </div>
       </div>
       <button
-        style={{ marginTop: "20px", alignSelf: "center" }}
+        style={{ marginTop: "20px" }}
         type="button"
         className="app-main-button"
         onClick={() => handleRemoveSchedule(index)}
