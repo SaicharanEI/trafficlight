@@ -45,6 +45,7 @@ export default function TrafficLightComponent({
       </div>
       {schedules.map((schedule: any, index: number) => (
         <ScheduleComponent
+          key={index}
           schedule={schedule}
           index={index}
           handleScheduleChange={handleScheduleChange}

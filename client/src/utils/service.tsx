@@ -16,7 +16,7 @@ const useFetch = <T,>() => {
 
   const fetchData = async (url: string, method: string = "GET", data?: any) => {
     setState({ data: null, loading: true, error: null });
-    console.log(data, url, method);
+    // console.log(data, url, method);
     const requestOptions: RequestInit = {
       method,
       headers: {
@@ -48,7 +48,7 @@ const useFetch = <T,>() => {
         setState({ data: responseData.data, loading: false, error: null });
       }
     } catch (error: any) {
-      console.log(error);
+      // console.log(error);
       setState({ data: null, loading: false, error: error.message });
     }
   };

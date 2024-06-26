@@ -28,7 +28,7 @@ function TrafficLightEdit() {
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-
+    console.log(schedules);
     if (trafficLight) {
       const updatedTrafficLight: TrafficLight = {
         ...trafficLight,
@@ -70,6 +70,7 @@ function TrafficLightEdit() {
     field: keyof TrafficLightSchedule,
     value: string | number
   ) => {
+    console.log(index, field, value);
     setSchedules((prev) =>
       prev.map((item, i) => (i === index ? { ...item, [field]: value } : item))
     );

@@ -1,6 +1,8 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { prismaCilent } from "..";
 import { TrafficLightSchema } from "../schema/trafficlight";
+import { ErrorCode } from "../exceptions/root";
+import { NotFoundException } from "../exceptions/not-found";
 
 export const AddTrafficLight = async (req: Request, res: Response) => {
   const parsedBody = TrafficLightSchema.parse(req.body);
@@ -25,109 +27,12 @@ export const AddTrafficLight = async (req: Request, res: Response) => {
   });
 };
 
-// export const updateTrafficLight = async (req: Request, res: Response) => {
-//   const { id } = req.params;
-//   const parsedBody = req.body;
-
-//   try {
-//     const { name, location, currentColor, schedules } = parsedBody;
-
-//     const updateSchedule = schedules.map((schedule: any) => async () => {
-//       if (schedule.id) {
-//         await prismaCilent.trafficLightSchedule.update({
-//           where: { id: schedule.id },
-//           data: { ...schedule },
-//         });
-//       } else {
-//         await prismaCilent.trafficLightSchedule.create({
-//           data: { ...schedule, trafficLightId: Number(id) },
-//         });
-//       }
-//     });
-//     const updatedTrafficLight = await prismaCilent.trafficLight.update({
-//       where: {
-//         id: Number(id),
-//       },
-//       data: {
-//         name,
-//         location,
-//         currentColor,
-//       },
-//       include: {
-//         schedules: true,
-//       },
-//     });
-
-//     res.status(200).json({
-//       message: "Traffic light updated successfully",
-//       data: updatedTrafficLight,
-//     });
-//   } catch (error) {
-//     console.error("Error updating traffic light:", error);
-//     res.status(500).json({ message: "Failed to update traffic light" });
-//   }
-// };
-
-// data: {
-//     name,
-//     location,
-//     currentColor,
-//     schedules: {
-//       upsert: schedules.map((schedule: any) => ({
-//         where: { id: schedule.id || '' },
-//         create: {
-//           ...schedule,
-//           trafficLightId: Number(id),
-//         },
-//         update: {
-//           ...schedule,
-//         },
-//       })),
-//     },
-//   },
-
-// export const updateTrafficLight = async (req: Request, res: Response) => {
-//   const { id } = req.params;
-//   const { name, location, currentColor, schedules } = req.body;
-
-//   try {
-//     // Update traffic light
-//     const updatedTrafficLight = await prismaCilent.trafficLight.update({
-//       where: { id: Number(id) },
-//       data: {
-//         name,
-//         location,
-//         currentColor,
-//         schedules: {
-//           upsert: schedules.map((schedule: any) => ({
-//             where: { id: schedule.id || undefined },
-//             create: { ...schedule, trafficLightId: Number(id) },
-//             update: { ...schedule },
-//           })),
-//         },
-//       },
-//       include: {
-//         schedules: true,
-//       },
-//     });
-
-//     res.status(200).json({
-//       message: "Traffic light updated successfully",
-//       data: updatedTrafficLight,
-//     });
-//   } catch (error) {
-//     console.error("Error updating traffic light:", error);
-//     res.status(500).json({ message: "Failed to update traffic light" });
-//   }
-// };
-
-export const updateTrafficLight = async (req: Request, res: Response) => {
+export const updateTrafficLight = async (req: Request, res: Response,next: NextFunction) => {
   const { id } = req.params;
   const trafficLightId = Number(id);
-  // const parsedBody = TrafficLightSchema.parse(req.body);
   const { name, location, currentColor, schedules } = req.body;
-  console.log(schedules, "schedules", schedules.length, "length", schedules[0].id);
-  const updatedTrafficLight = await prismaCilent.trafficLight.update({
+  try{
+  await prismaCilent.trafficLight.update({
     where: { id: trafficLightId },
     data: { name, location, currentColor },
   });
@@ -135,9 +40,6 @@ export const updateTrafficLight = async (req: Request, res: Response) => {
   // Update schedules
   for (const schedule of schedules) {
     if (schedule.id !== undefined) {
-      // Update existing schedule
-      console.log( "schedule.update called");
-
       await prismaCilent.trafficLightSchedule.update({
         where: { id: schedule.id },
         data: {
@@ -150,8 +52,6 @@ export const updateTrafficLight = async (req: Request, res: Response) => {
         },
       });
     } else {
-      console.log( "schedule.create called");
-      // Create new schedule
       await prismaCilent.trafficLightSchedule.create({
         data: {
           timePeriod: schedule.timePeriod,
@@ -169,46 +69,6 @@ export const updateTrafficLight = async (req: Request, res: Response) => {
   // Fetch the updated traffic light with the latest schedules
   const trafficLightWithSchedules = await prismaCilent.trafficLight.findUnique({
     where: { id: trafficLightId },
-    include: { schedules:  {
-      where: {
-        status: false,
-      }, 
-
-    },
-  }
-  });
-
-  res.status(200).json({
-    message: "Traffic light updated successfully",
-    data: trafficLightWithSchedules,
-  });
-};
-
-
-export const DeleteTrafficLight = async (req: Request, res: Response) => {
-  const { id } = req.params;
-
-  const trafficlight = await prismaCilent.trafficLight.update({
-    where: {
-      id: Number(id),
-    },
-    data: {
-      status: true,
-    },
-  });
-  res.status(200).json({
-    message: "Traffic light deleted successfully",
-    trafficlight,
-  });
-};
-
-export const getTrafficLight = async (req: Request, res: Response) => {
-  const { id } = req.params;
-  console.log(id, "id called");
-  const trafficlight = await prismaCilent.trafficLight.findUnique({
-    where: {
-      id: Number(id),
-    },
     include: {
       schedules: {
         where: {
@@ -217,11 +77,60 @@ export const getTrafficLight = async (req: Request, res: Response) => {
       },
     },
   });
-  console.log(trafficlight, "trafficlight");
-  res.status(200).json({ data: trafficlight });
+
+  res.status(200).json({
+    message: "Traffic light updated successfully",
+    data: trafficLightWithSchedules,
+  });
+}
+  catch (error : any) {
+    next (new NotFoundException("Traffic light not found", ErrorCode.LIGHT_NOT_FOUND))
+  }
 };
 
-export const getTrafficLights = async (req: Request, res: Response) => {
+export const DeleteTrafficLight = async (req: Request, res: Response, next: NextFunction) => {
+  const { id } = req.params;
+  try {
+    const trafficlight = await prismaCilent.trafficLight.update({
+      where: {
+        id: Number(id),
+      },
+      data: {
+        status: true,
+      },
+    });
+    res.status(200).json({
+      message: "Traffic light deleted successfully",
+      trafficlight,
+    });
+  } catch (error : any) {
+    next (new NotFoundException("Traffic light not found", ErrorCode.LIGHT_NOT_FOUND))
+  }
+};
+
+export const getTrafficLight = async (req: Request, res: Response, next: NextFunction) => {
+  const { id } = req.params;
+  try {
+    const trafficlight = await prismaCilent.trafficLight.findUnique({
+      where: {
+        id: Number(id),
+      },
+      include: {
+        schedules: {
+          where: {
+            status: false,
+          },
+        },
+      },
+    });
+    res.status(200).json({ data: trafficlight });
+  } catch (error : any) {
+    next (new NotFoundException("Traffic light not found", ErrorCode.LIGHT_NOT_FOUND))
+
+  }
+};
+
+export const getTrafficLightsList = async (req: Request, res: Response) => {
   const trafficlights = await prismaCilent.trafficLight.findMany({
     where: {
       status: false,
@@ -237,41 +146,42 @@ export const getTrafficLights = async (req: Request, res: Response) => {
   res.status(200).json({ data: trafficlights });
 };
 
-export const updateTrafficLightCurrentColor = async (
-  req: Request,
-  res: Response
-) => {
+export const deleteSchedule = async (req: Request, res: Response, next: NextFunction) => {
   const { id } = req.params;
-  const { currentColor } = req.body;
-  console.log(currentColor, id);
-  const trafficlight = await prismaCilent.trafficLight.update({
-    where: {
-      id: Number(id),
-    },
-    data: {
-      currentColor,
-    },
-  });
-  console.log(trafficlight);
-  res.status(200).json({
-    message: "Traffic light updated successfully",
-    data: trafficlight,
-  });
+  try {
+    const schedule = await prismaCilent.trafficLightSchedule.update({
+      where: {
+        id: Number(id),
+      },
+      data: {
+        status: true,
+      },
+    });
+    res.status(200).json({
+      message: "Schedule deleted successfully",
+      schedule,
+    });
+  } catch (error: any) {
+    next (new NotFoundException("Traffic light not found", ErrorCode.LIGHT_NOT_FOUND))
+  }
 };
 
-export const deleteSchedule = async (req: Request, res: Response) => {
-  const { id } = req.params;
-  console.log(id, "id called delete schedule");
-  const schedule = await prismaCilent.trafficLightSchedule.update({
-    where: {
-      id: Number(id),
-    },
-    data: {
-      status: true,
-    },
-  });
-  res.status(200).json({
-    message: "Schedule deleted successfully",
-    schedule,
-  });
-};
+// export const updateTrafficLightCurrentColor = async (
+//   req: Request,
+//   res: Response
+// ) => {
+//   const { id } = req.params;
+//   const { currentColor } = req.body;
+//   const trafficlight = await prismaCilent.trafficLight.update({
+//     where: {
+//       id: Number(id),
+//     },
+//     data: {
+//       currentColor,
+//     },
+//   });
+//   res.status(200).json({
+//     message: "Traffic light updated successfully",
+//     data: trafficlight,
+//   });
+// };

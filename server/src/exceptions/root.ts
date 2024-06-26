@@ -18,5 +18,6 @@ export class HttpException extends Error {
 export enum ErrorCode {
     INTERNAL_EXCEPTION= 3001,
     LIGHT_NOT_FOUND = 5001,
+    SCHEDULE_NOT_FOUND  = 5002,
     UNPROCESSABLE_ENTITY = 2001
 }
