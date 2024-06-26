@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
 // import { useAppDispatch } from "../../store/hooks";
 import { TrafficLightSchedule } from "../../store/trafficSlice";
-// import Toast from "../../utils/Toast";
 import "../../App.css";
 import useFetch from "../../utils/service";
-import ScheduleComponent from "../../components/Schedules/Schedule";
+import TrafficLightComponent from "../../components/TrafficLigt/TrafficLight";
 
 function AddTrafficLightForm() {
   // const dispatch = useAppDispatch();
@@ -67,59 +66,20 @@ function AddTrafficLightForm() {
   }, [state.data]);
 
   return (
-    <form className="app-form" onSubmit={handleSubmit}>
-      <h1 className="app-main-heading">Add Traffic Light</h1>
-      <div
-        style={{
-          display: "flex",
-          flexWrap: "wrap",
-          gap: "20px",
-        }}
-      >
-        <div className="app-input-container">
-          <label className="app-input-label" htmlFor="name">
-            Name:
-          </label>
-          <input
-            className="app-input-field"
-            type="text"
-            id="name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-          />
-        </div>
-        <div className="app-input-container">
-          <label className="app-input-label" htmlFor="location">
-            Location:
-          </label>
-          <input
-            className="app-input-field"
-            type="text"
-            id="location"
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-            required
-          />
-        </div>
-      </div>
-      {schedules.map((schedule, index) => (
-        <ScheduleComponent schedule={schedule} index={index} handleScheduleChange={handleScheduleChange} handleRemoveSchedule={handleRemoveSchedule} />
-      ))}
-      <div style={{ display: "flex", flexWrap: "wrap", gap: "20px" }}>
-        <button
-          className="app-main-button"
-          type="button"
-          onClick={handleAddSchedule}
-        >
-          Add Schedule
-        </button>
-
-        <button className="app-main-button" type="submit">
-          Add Traffic Light
-        </button>
-      </div>
-    </form>
+    <>
+      <TrafficLightComponent
+        setName={setName}
+        setLocation={setLocation}
+        schedules={schedules}
+        handleSubmit={handleSubmit}
+        handleAddSchedule={handleAddSchedule}
+        handleRemoveSchedule={handleRemoveSchedule}
+        handleScheduleChange={handleScheduleChange}
+        name={name}
+        location={location}
+        heading="Add Traffic Light"
+      />
+    </>
   );
 }
 
