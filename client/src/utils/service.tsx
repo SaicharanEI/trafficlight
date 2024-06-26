@@ -45,9 +45,8 @@ const useFetch = <T,>() => {
             title: responseData.message,
           });
         }
-          setState({ data: responseData.data, loading: false, error: null });
-        }
-      
+        setState({ data: responseData.data, loading: false, error: null });
+      }
     } catch (error: any) {
       console.log(error);
       setState({ data: null, loading: false, error: error.message });

@@ -43,7 +43,7 @@ export default function TrafficLightComponent({
           />
         </div>
       </div>
-      {schedules.map((schedule, index) => (
+      {schedules.map((schedule: any, index: number) => (
         <ScheduleComponent
           schedule={schedule}
           index={index}
